@@ -9,11 +9,14 @@ A lightweight **single-page web app** (pure HTML/JS) for **bulk adding and remov
 
 > ✅ Runs 100% in the browser and talks directly to Microsoft Graph (no backend).
 
+🌐 **Demo:** https://www.uemlab.pl/IntuneAppBulkAssignment/
+
 ---
 
 ## Table of contents
 - ✨ [Features](#features)
 - ✅ [Requirements](#requirements)
+- 🌐 [Demo](#demo)
 - 📦 [Installation](#installation)
 - 🆔 [Entra ID setup (App Registration)](#entra-id-setup-app-registration)
 - 🚀 [Quick start](#quick-start)
@@ -51,6 +54,14 @@ A lightweight **single-page web app** (pure HTML/JS) for **bulk adding and remov
 
 ---
 
+## Demo
+Aplikacja/demo jest dostępne tutaj:  
+https://www.uemlab.pl/IntuneAppBulkAssignment/
+
+> Tip: If you host your own instance, remember to register the exact hosting URL as a Redirect URI in Entra ID.
+
+---
+
 ## Installation
 This is a **static** app — host the files as a web page.
 
@@ -78,8 +89,42 @@ The app derives Redirect URI from the current page URL (`window.location.origin 
 
 ---
 
+## Run locally (Python)
+> ⚠️ Do **not** run via `file://...` — authentication redirect requires HTTP(S).
+
+1. Open a terminal in the folder that contains `index.html`
+2. Start a simple local web server:
+
+```bash
+python -m http.server 8080
+```
+
+## Host anywhere (any web server)
+This is a **static single-page app** (HTML/JS) — you can run it on **any web server** that can serve static files.
+
+✅ Examples:
+- GitHub Pages
+- IIS / Nginx / Apache
+- Azure Storage Static Website
+- Azure App Service (static files)
+- Any internal/company web server
+
+### Important (Redirect URI)
+The app derives Redirect URI from the current page URL:
+
+`window.location.origin + window.location.pathname`
+
+➡️ **That exact URL must be added as a Redirect URI** in your Entra ID App Registration (SPA).  
+Otherwise you will hit `AADSTS50011 / redirect_uri_mismatch`.
+
+### Quick deploy steps
+1. Copy the repository files to your web root (where `index.html` is accessible).
+2. Open the hosted URL in the browser.
+3. In Entra ID → App registration → Authentication → SPA, add the **exact** hosted URL as Redirect URI.
+4. Done — sign in and use the app.
+
 ## Quick start
-1. 🏢 In **Tenant configuration**, add a profile (Name, Tenant ID/domain, Client ID) and save.
+1. 🏢 In **Tenant configuration**, add a profile (Name, Tenant ID/domain, Client ID) and save.  
    - (Optional) export/import tenant profiles as JSON.
 2. 🔐 Select the tenant and click **Sign in & load apps**.
 3. 🔎 (Optional) set **Filters** (platform / name search) — affects the table and export.
@@ -107,7 +152,7 @@ Export includes (among others):
 - Assignment filter (name) / Filter mode / Filter Id
 - Assignment Id / App Id
 
-The file name is generated like:
+The file name is generated like:  
 `intune-app-assignments_<tenant>_<YYYY-MM-DD>.xlsx`
 
 ---
@@ -155,8 +200,8 @@ Contributions are welcome! 🛠️
 ## Reporting issues & feedback
 Bug reports and feature requests are very welcome. 💬
 
-Open an issue:
-- https://github.com/<OWNER>/<REPO>/issues
+Open an issue:  
+https://github.com/<OWNER>/<REPO>/issues
 
 When reporting a bug, please include:
 - steps to reproduce,
@@ -168,8 +213,8 @@ When reporting a bug, please include:
 
 ## Project status
 Actively maintained. 🚀  
-Check **Releases** for the latest version, changelog and downloads:
-- https://github.com/<OWNER>/<REPO>/releases
+Check **Releases** for the latest version, changelog and downloads:  
+https://github.com/<OWNER>/<REPO>/releases
 
 ---
 
@@ -177,4 +222,4 @@ Check **Releases** for the latest version, changelog and downloads:
 This tool is not a Microsoft product and is not affiliated with Microsoft.  
 Use at your own risk — always test in a non-production environment first.
 
-> Replace `<OWNER>/<REPO>` in badges and links with your GitHub repository path.
+
