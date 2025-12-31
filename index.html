@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Intune Apps Bulk Assignment (multi-tenant)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- MSAL.js -->
+  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+  <!-- XLSX (SheetJS) for Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css">
+
+  <link rel="stylesheet" href="css/app.css">
+
+  <!-- Main app JS -->
+  </head>
+<body>
+  <section class="section">
+    <div class="container is-fluid">
+      <div class="app-card">
+    <div class="card-inner">
+      <div class="card-header">
+        <div class="title-stack">
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Intune
+          </div>
+          <h1>
+            Intune Apps Bulk Assignment (multi-tenant)
+          </h1>
+          <p>
+            Intune App Bulk Assignment enables administrators to quickly assign 
+			multiple groups to multiple applications in one operation, 
+			with support for assignment filters. The tool also lets you export all current 
+			assignments to an Excel (.xlsx) file for easy review and reporting.
+          </p>
+        </div>
+
+        <div class="top-tools-row">
+          <button id="theme-toggle" class="secondary small">
+            <span>Theme: Dark 🌙</span>
+          </button>
+          <button id="help-button" class="secondary small" aria-haspopup="dialog" aria-controls="help-overlay">
+            <span>Help ❔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TENANT CONFIG PANEL -->
+      <h2 id="tenant-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Tenant configuration</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+
+      <div id="tenant-panel">
+        <div id="tenant-form-row" class="tenant-form-row">
+          <label>
+            Name:
+            <input id="tenant-name" placeholder="e.g. Prod Contoso" />
+          </label>
+          <label>
+            Tenant (ID or domain):
+            <input id="tenant-tenant" placeholder="GUID" />
+          </label>
+          <label>
+            Client ID:
+            <input id="tenant-client-id" placeholder="App (client) ID / GUID" />
+          </label>
+          
+        </div>
+
+        <div id="tenant-actions-row" class="tenant-actions-row" style="margin-top:0.2rem;">
+          <button id="tenant-save-button" class="secondary">Save / overwrite tenant</button>
+		  <button id="tenant-export-button" class="secondary">Export (JSON)</button>
+          <button id="tenant-import-button" class="secondary">Import from file (JSON)</button>
+          <button id="tenant-delete-button" class="secondary" style="border-color:#b91c1c;color:#fecaca;">
+            Delete selected
+          </button>
+          <input type="file" id="tenant-import-input" accept="application/json" style="display:none;" />
+        </div>
+      </div>
+
+      <!-- AUTH PANEL -->
+      <h2 id="auth-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Authentication</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+      <div id="auth-panel">
+        
+        <div id="message-bar"></div>
+        
+        <div id="auth-tenant-row">
+          <label>
+            Selected tenant:
+            <select id="tenant-select">
+              <option value="">-- none --</option>
+            </select>
+          </label>
+        </div>
+<div id="apps-summary" class="subtle"></div>
+
+        <div class="btn-row">
+          <div class="login-stack">
+          <button id="login-button">
+            <span class="btn-dot"></span>
+            Sign in &amp; load apps
+          </button>
+        </div>
+          <button id="logout-button" class="secondary">
+            Sign out
+          </button>
+        </div>
+		<div id="status">Status: select a tenant and sign in.</div>
+      </div>
+
+      <!-- BULK PANEL -->
+      <h2 id="bulk-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Bulk assignment / removal</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+      <div id="bulk-panel">
+        <div class="bulk-row">
+          <label>
+            Intent:
+            <select id="bulk-intent">
+              <option value="required">Required</option>
+              <option value="available">Available</option>
+              <option value="uninstall">Uninstall</option>
+            </select>
+          </label>
+
+          <label>
+            Target:
+            <select id="bulk-target-type">
+              <option value="allDevices">All devices</option>
+              <option value="allUsers">All users</option>
+              <option value="group">Group (by name)</option>
+            </select>
+          </label>
+
+          <label id="bulk-group-name-wrapper">
+            Group name:
+            <input id="bulk-group-name" list="group-name-suggestions" placeholder="e.g. Intune - Laptops" />
+            <datalist id="group-name-suggestions"></datalist>
+          </label>
+          <label id="bulk-group-mode-wrapper">
+            Group mode:
+            <select id="bulk-group-mode">
+              <option value="include">Include</option>
+              <option value="exclude">Exclude</option>
+            </select>
+          </label>
+
+          <label id="bulk-assignment-filter-mode-wrapper">
+            Assignment filter:
+            <select id="bulk-assignment-filter-mode">
+              <option value="none">No filter</option>
+              <option value="include">Include</option>
+              <option value="exclude">Exclude</option>
+            </select>
+          </label>
+
+          <label id="bulk-assignment-filter-name-wrapper">
+            Filter name:
+            <input id="bulk-assignment-filter-name" list="assignment-filter-suggestions" placeholder="e.g. Windows 11 only" />
+            <datalist id="assignment-filter-suggestions"></datalist>
+          </label>
+
+
+          <button id="bulk-assign-button" class="secondary">
+            Add assignment
+          </button>
+          <button id="bulk-delete-button" class="secondary" style="border-style:dashed;">
+            Remove assignment
+          </button>
+        </div>
+        <div class="subtle">
+          First click shows a summary of the operation, second click executes it.<br/>
+          Conflicts (e.g. different intents for the same target) are detected and those apps are skipped.
+        </div>
+      </div>
+
+      <!-- FILTER PANEL -->
+      <h2 id="filter-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Filters</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+      <div id="filter-panel">
+        <div class="bulk-row" style="margin-bottom:0;">
+          <label>
+            Platform:
+            <select id="platform-filter">
+              <option value="all">All</option>
+              <option value="windows">Windows</option>
+              <option value="ios">iOS</option>
+              <option value="macos">macOS</option>
+              <option value="android">Android</option>
+            </select>
+          </label>
+
+          <label>
+            App name contains:
+            <input id="name-filter" placeholder="e.g. Teams" />
+          </label>
+
+          <button id="export-xlsx-button" class="secondary">
+            Export to Excel (apps &amp; assignments)
+          </button>
+        </div>
+        <div class="subtle" style="margin-top:0.25rem;">
+          Filters (platform + name) are applied to the table and Excel export.
+        </div>
+      </div>
+
+      <!-- APPS PANEL (TABLE) -->
+      <h2 id="apps-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Apps &amp; assignments table</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+      <div id="apps-panel">
+        <div id="apps-table-wrapper">
+          <em>No data – select a tenant and click “Sign in &amp; load apps”.</em>
+        </div>
+      </div>
+
+      <!-- LOG PANEL -->
+      <h2 id="log-panel-toggle" class="panel-toggle">
+        <span class="toggle-label">Raw log (Graph responses / errors)</span>
+        <span class="toggle-icon">▾</span>
+      </h2>
+      <div id="log-panel">
+        <div class="log-header">
+          <span class="subtle">Raw log (Graph responses / errors)</span>
+          <button id="clear-log-button" class="secondary small">Clear log</button>
+        </div>
+
+        <div id="output">
+          Raw log (Graph responses / errors) will appear here…
+        </div>
+      </div>
+    </div>
+  </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Context menu for assignments -->
+  <div id="context-menu" class="ctx-menu hidden" role="menu" aria-label="Assignment actions">
+    <button id="ctx-remove-assignment" class="ctx-menu-item danger" type="button">Remove assignment</button>
+  </div>
+
+
+  <!-- Confirm modal -->
+  <div id="confirm-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-card" role="document">
+      <div class="modal-title" id="confirm-title">Remove assignment?</div>
+      <div class="modal-body" id="confirm-message"></div>
+      <div class="modal-actions">
+        <button id="confirm-cancel" class="secondary" type="button">Cancel</button>
+        <button id="confirm-ok" class="danger" type="button">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help / About modal -->
+  <div id="help-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal-card wide" role="document">
+      <div class="modal-title" id="help-title">Help / About</div>
+      <div class="modal-body scroll" id="help-body">
+        <!-- Filled by JS -->
+      </div>
+      <div class="modal-actions">
+        <button id="help-close" class="secondary" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/00-core.js" defer></script>
+  <script src="js/01-modals-help.js" defer></script>
+  <script src="js/02-suggestions-resolvers.js" defer></script>
+  <script src="js/03-ui-utils.js" defer></script>
+  <script src="js/04-graph-ops.js" defer></script>
+  <script src="js/05-handlers-export.js" defer></script>
+</body>
+</html>
