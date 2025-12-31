@@ -9,25 +9,26 @@ A lightweight **single-page web app** (pure HTML/JS) for **bulk adding and remov
 
 > ✅ Runs 100% in the browser and talks directly to Microsoft Graph (no backend).
 
-* * *
+---
 
 ## Table of contents
-- ✨ Features
-- Requirements
-- Installation
-- Quick start
-- 📦 Export to Excel
-- 🔐 Security notes
-- ⚠️ Known limitations
-- 🧰 Troubleshooting
-- 🤝 Contributing
-- 🐞 Reporting issues & feedback
-- 📌 Project status
-- 📄 License / Disclaimer
+- ✨ [Features](#features)
+- ✅ [Requirements](#requirements)
+- 📦 [Installation](#installation)
+- 🆔 [Entra ID setup (App Registration)](#entra-id-setup-app-registration)
+- 🚀 [Quick start](#quick-start)
+- 📊 [Export to Excel](#export-to-excel)
+- 🔐 [Security notes](#security-notes)
+- ⚠️ [Known limitations](#known-limitations)
+- 🧰 [Troubleshooting](#troubleshooting)
+- 🤝 [Contributing](#contributing)
+- 🐞 [Reporting issues & feedback](#reporting-issues--feedback)
+- 📌 [Project status](#project-status)
+- 📄 [License / Disclaimer](#license--disclaimer)
 
-* * *
+---
 
-## ✨ Features
+## Features
 - ✅ **Bulk assignment**: add the same assignment (intent + target) to many apps in one go (with a 2-click confirmation).
 - ✅ **Bulk removal**: remove a selected assignment from multiple apps (also with confirmation).
 - 🎯 **Targets supported**:
@@ -41,14 +42,14 @@ A lightweight **single-page web app** (pure HTML/JS) for **bulk adding and remov
 - 🖱️ **Remove a single assignment** from the table via **right-click / context menu**.
 - 🌐 **No backend** — everything runs in the browser using Microsoft Graph.
 
-* * *
+---
 
 ## Requirements
 - 🌍 A modern browser (Chrome / Edge recommended).
 - 🔑 Microsoft Intune access and sufficient roles/permissions (e.g., Intune Administrator), depending on your org policies.
 - 🆔 **Microsoft Entra ID App Registration** (SPA) with delegated Microsoft Graph permissions.
 
-* * *
+---
 
 ## Installation
 This is a **static** app — host the files as a web page.
@@ -57,7 +58,7 @@ This is a **static** app — host the files as a web page.
 2. 🔁 Add the hosting URL as a **Redirect URI** in Entra ID (see below).
 3. ✅ Open the app in your browser.
 
-* * *
+---
 
 ## Entra ID setup (App Registration)
 The app derives Redirect URI from the current page URL (`window.location.origin + window.location.pathname`).
@@ -75,7 +76,7 @@ The app derives Redirect URI from the current page URL (`window.location.origin 
 - `DeviceManagementApps.ReadWrite.All`
 - `DeviceManagementConfiguration.Read.All`
 
-* * *
+---
 
 ## Quick start
 1. 🏢 In **Tenant configuration**, add a profile (Name, Tenant ID/domain, Client ID) and save.
@@ -94,9 +95,9 @@ The app derives Redirect URI from the current page URL (`window.location.origin 
    Same flow for **Remove assignment**.
 7. 🖱️ Remove a single assignment from the table using **right-click → Remove assignment**.
 
-* * *
+---
 
-## 📦 Export to Excel
+## Export to Excel
 Use **Export to Excel (apps & assignments)** in the Filters section.
 
 Export includes (among others):
@@ -109,54 +110,52 @@ Export includes (among others):
 The file name is generated like:
 `intune-app-assignments_<tenant>_<YYYY-MM-DD>.xlsx`
 
-* * *
+---
 
-## 🔐 Security notes
+## Security notes
 - ✅ No backend — requests go directly from your browser to Microsoft Graph.
 - 💾 Tenant profiles are stored locally in `localStorage`.
 - 🧾 Auth tokens are stored in `sessionStorage`.
 
-* * *
+---
 
-## ⚠️ Known limitations
+## Known limitations
 - 🚫 **Assignment filters are not supported for “Exclude group”** (Graph/Intune behavior) — the app blocks that combination to prevent `BadRequest`.
 - 📄 App list loads in pages, but the tool may **stop after ~500 apps** as a safety limit.
 - 🧪 Reading assignments may use the **beta** endpoint for Intune `mobileApps` assignments.
 
-* * *
+---
 
-## 🧰 Troubleshooting
-### ❌ AADSTS50011 / redirect_uri_mismatch
+## Troubleshooting
+
+### AADSTS50011 / redirect_uri_mismatch
 - Ensure the Redirect URI in Entra ID matches the **exact** hosting URL (including path).
 
-### ❌ 403 / missing groups / missing filters
+### 403 / missing groups / missing filters
 - Usually missing consent for `DeviceManagementConfiguration.Read.All` and/or `Group.Read.All`.
 
-### ❌ Filter not found by name
+### Filter not found by name
 - Try a more exact name or paste the filter GUID directly.
 
-### 🔎 Need details?
+### Need details?
 - Check the **Raw log** panel for Graph requests and error payloads.
 
-* * *
+---
 
-## 🤝 Contributing
+## Contributing
 Contributions are welcome! 🛠️
 
 1. Check existing issues and open a new one if needed.
 2. Fork the repo and create a feature branch.
 3. Commit changes with clear messages.
-4. Open a Pull Request describing:
-   - what was changed,
-   - why it is useful,
-   - how it was tested.
+4. Open a Pull Request describing what was changed, why, and how it was tested.
 
-* * *
+---
 
-## 🐞 Reporting issues & feedback
+## Reporting issues & feedback
 Bug reports and feature requests are very welcome. 💬
 
-Open an issue here:
+Open an issue:
 - https://github.com/<OWNER>/<REPO>/issues
 
 When reporting a bug, please include:
@@ -165,16 +164,16 @@ When reporting a bug, please include:
 - a sanitized snippet from **Raw log**,
 - whether it happens in one tenant or multiple tenants.
 
-* * *
+---
 
-## 📌 Project status
+## Project status
 Actively maintained. 🚀  
-Check **Releases** for the latest version, change log and downloads:
+Check **Releases** for the latest version, changelog and downloads:
 - https://github.com/<OWNER>/<REPO>/releases
 
-* * *
+---
 
-## 📄 License / Disclaimer
+## License / Disclaimer
 This tool is not a Microsoft product and is not affiliated with Microsoft.  
 Use at your own risk — always test in a non-production environment first.
 
